@@ -17,7 +17,7 @@ var paths = {
   css: '../assets/src/css/**/*.css',
   images: '../assets/src/images/**/*',
   other: '../assets/src/other/**/*',
-  php: '../**/*.php',
+  html: '../**/*.html',
   dist: '../assets/dist'
 };
 
@@ -90,7 +90,7 @@ gulp.task('watch', function() {
   gulp.watch([paths.js], ['scripts']);
   gulp.watch([paths.images], ['images']);
   gulp.watch([paths.other], ['other']);
-  gulp.watch([paths.php], function() {
+  gulp.watch([paths.html], function() {
     livereload.reload();
   });
 });
