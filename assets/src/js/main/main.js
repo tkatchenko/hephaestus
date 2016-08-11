@@ -1,4 +1,4 @@
-$(window).load(function() {
+$(window).on('load', function() {
   var curve = $.bez([0.55, 0, .1, 1]);
 });
 
