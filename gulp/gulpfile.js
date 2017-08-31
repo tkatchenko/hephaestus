@@ -9,6 +9,7 @@ var del = require('del');
 var chmod = require('gulp-chmod');
 var livereload = require('gulp-livereload');
 var plumber = require('gulp-plumber');
+var autoprefixer = require('gulp-autoprefixer');
 
 var paths = {
   js: '../assets/src/js/**/*.js',
@@ -31,6 +32,10 @@ gulp.task('styles', function() {
     }))
     .pipe(sass({errLogToConsole: true}))
     .pipe(concat('all.min.css'))
+    .pipe(autoprefixer({
+      browsers: ['last 3 versions'],
+      cascade: false
+    }))
     .pipe(gulp.dest(paths.dist + '/css'))
     .pipe(livereload());
 });
@@ -40,6 +45,10 @@ gulp.task('styles-build', function() {
     .pipe(sass({errLogToConsole: true}))
     .pipe(minifyCss({compatibility: 'ie8', advanced: false}))
     .pipe(concat('all.min.css'))
+    .pipe(autoprefixer({
+      browsers: ['last 3 versions'],
+      cascade: false
+    }))
     .pipe(gulp.dest(paths.dist + '/css'));
 });
 
