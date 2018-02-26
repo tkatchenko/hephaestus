@@ -33,20 +33,6 @@ $curve: cubic-bezier(0.55, 0, 0.1, 1);
 }
 */
 
-/* Clearfix */
-.clearfix {
-  zoom: 1;
-  &:before, &:after {
-    content: "\0020";
-    display: block;
-    height: 0;
-    overflow: hidden;
-  }
-  &:after {
-    clear: both;
-  }
-}
-
 /* Fonts */
 /*
 @import 'fonts';
