@@ -1,120 +1,63 @@
-var gulp = require('gulp');
-var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
-var sass = require('gulp-sass');
-var minifyCss = require('gulp-minify-css');
-var imagemin = require('gulp-imagemin');
-var runSequence = require('run-sequence');
-var del = require('del');
-var chmod = require('gulp-chmod');
-var livereload = require('gulp-livereload');
-var plumber = require('gulp-plumber');
-var order = require('gulp-order');
-var babel = require('gulp-babel');
+const gulp = require('gulp');
+const concat = require('gulp-concat');
+const sass = require('gulp-sass');
+const postcss = require('gulp-postcss');
+const autoprefixer = require('autoprefixer');
+const cssnano = require('cssnano');
+const babel = require('gulp-babel');
+const webpack = require('webpack-stream');
+const livereload = require('gulp-livereload');
+ 
+function styles() {
+  return gulp.src('../scss/index.scss')
+    .pipe(sass().on('error', (error) => console.log(error)))
+    .pipe(postcss([
+      autoprefixer(),
+      cssnano()
+    ]))
+    .pipe(concat('styles.css'))
+    .pipe(gulp.dest('../build'))
+    .pipe(livereload().on('error', (error) => console.log(error)));
+}
 
-var paths = {
-  js: '../assets/src/js/**/*.js',
-  sass: '../assets/src/sass/main.scss',
-  sassWatch: '../assets/src/sass/**/*.scss',
-  css: '../assets/src/css/**/*.css',
-  images: '../assets/src/images/**/*',
-  other: '../assets/src/other/**/*',
-  php: '../**/*.php',
-  dist: '../assets/dist'
-};
-
-gulp.task('styles', function() {
-  return gulp.src([paths.css, paths.sass])
-    .pipe(plumber({
-      errorHandler: function (err) {
-        console.log(err);
-        this.emit('end');
+function scripts() {
+  return gulp.src(['../js/index.js'])
+    .pipe(webpack({
+      mode: 'development',
+      output: {
+        filename: 'scripts.js',
       }
     }))
-    .pipe(sass({errLogToConsole: true}))
-    .pipe(concat('all.min.css'))
-    .pipe(gulp.dest(paths.dist + '/css'))
-    .pipe(livereload());
-});
+    .pipe(gulp.dest('../build'))
+    .pipe(livereload().on('error', (error) => console.log(error)));
+}
 
-gulp.task('styles-build', function() {
-  return gulp.src([paths.css, paths.sass])
-    .pipe(sass({errLogToConsole: true}))
-    .pipe(minifyCss({compatibility: 'ie11', advanced: false}))
-    .pipe(concat('all.min.css'))
-    .pipe(gulp.dest(paths.dist + '/css'));
-});
-
-gulp.task('scripts', function() {
-  return gulp.src([paths.js])
-    .pipe(order([
-      '../assets/src/js/libs/',
-      '../assets/src/js/main/',
-    ]))
-    .pipe(babel({
-      presets: ['@babel/preset-env'],
-      ignore: ['../assets/src/js/libs/']
+function buildScripts() {
+  return gulp.src(['../js/index.js'])
+    .pipe(webpack({
+      mode: 'production',
+      output: {
+        filename: 'scripts.js',
+      }
     }))
-    .pipe(concat('all.min.js'))
-    .pipe(gulp.dest(paths.dist + '/js'))
-    .pipe(livereload());
-});
-
-gulp.task('scripts-build', function() {
-  return gulp.src([paths.js])
-    .pipe(order([
-      '../assets/src/js/libs/',
-      '../assets/src/js/main/',
-    ]))
     .pipe(babel({
-      presets: ['@babel/preset-env'],
-      ignore: ['../assets/src/js/libs/']
+      presets: ['@babel/preset-env']
     }))
-    .pipe(concat('all.min.js'))
-    .pipe(uglify())
-    .pipe(gulp.dest(paths.dist + '/js'));
-});
+    .pipe(gulp.dest('../build'))
+    .pipe(livereload().on('error', (error) => console.log(error)));
+}
 
-gulp.task('images', function() {
-  return gulp.src([paths.images])
-    .pipe(chmod(644))
-    .pipe(gulp.dest(paths.dist + '/images'))
-    .pipe(livereload());
-});
-
-gulp.task('images-build', function() {
-  return gulp.src([paths.images])
-    .pipe(chmod(644))
-    .pipe(gulp.dest(paths.dist + '/images'));
-});
-
-gulp.task('other', function() {
-  return gulp.src([paths.other])
-    .pipe(chmod(644))
-    .pipe(gulp.dest(paths.dist + '/other'))
-    .pipe(livereload());
-});
-
-gulp.task('watch', function() {
+function watcher() {
   livereload.listen();
+  gulp.watch('../scss/**/*.scss', styles);
+  gulp.watch('../js/**/*.js', scripts);
+}
 
-  gulp.watch([paths.sassWatch, paths.css], ['styles']);
-  gulp.watch([paths.js], ['scripts']);
-  gulp.watch([paths.images], ['images']);
-  gulp.watch([paths.other], ['other']);
-  gulp.watch([paths.php], function() {
-    livereload.reload();
-  });
-});
+exports.default = gulp.series(
+  gulp.parallel(styles, scripts),
+  watcher
+);
 
-gulp.task('delete', function () {
-  return del([paths.dist + '/**/*'], {force: true});
-});
-
-gulp.task('default', function(callback) {
-  runSequence('delete', ['watch', 'styles', 'scripts', 'images', 'other'], callback);
-});
-
-gulp.task('build', function(callback) {
-  runSequence('delete', ['styles-build', 'scripts-build', 'images-build', 'other'], callback);
-});
+exports.build = gulp.series(
+  gulp.parallel(styles, buildScripts)
+);
