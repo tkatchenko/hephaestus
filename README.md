@@ -1,6 +1,6 @@
 # Hephaestus
 
-Basic Gulp build system for websites. Supports SASS, CSS/JS/image minification, Live Reload, etc.
+Basic Gulp build system for websites. Supports SASS, ES6, Live Reload, etc.
 
 ## Overview
 
