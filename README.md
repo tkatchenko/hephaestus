@@ -4,8 +4,6 @@ Basic Gulp build system for websites. Supports SASS, CSS/JS/image minification, 
 
 ## Overview
 
-Assets are created in _assets/src/_ and built to _assets/dist/_.
-
 Run `npm install` inside the _gulp_ directory to install dependencies.
 
 Run `gulp` inside the _gulp_ directory to start building for development, supports Live Reload.
