@@ -1,0 +1,50 @@
+/* Variables */
+$white: #FFFFFF;
+$black: #000000;
+
+$curve: cubic-bezier(0.55, 0, 0.1, 1);
+
+/* Normalize */
+@import 'normalize';
+
+/* Global adjustments */
+*, *:before, *:after {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased; outline: none;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style-position: outside;
+  margin: 0;
+  padding: 0;
+}
+
+input, select, textarea {
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+/* Placeholder */
+::input-placeholder {
+  color: white;
+  background-color: black;
+}
+
+/* Common */
+html {
+  font-size: 10px;
+  line-height: 1;
+
+  body {
+  }
+}
+
+/* Plugins */
+
+/* Imports */
