@@ -7,6 +7,7 @@ const cssnano = require('cssnano');
 const babel = require('gulp-babel');
 const webpack = require('webpack-stream');
 const livereload = require('gulp-livereload');
+const replace = require('gulp-replace');
  
 function styles() {
   return gulp.src('../scss/index.scss')
@@ -47,6 +48,12 @@ function buildScripts() {
     .pipe(livereload().on('error', (error) => console.log(error)));
 }
 
+function buildVersion() {
+  return gulp.src(['../index.html'])
+    .pipe(replace(/\?v=\d+/g, '?v=' + Math.floor((Math.random() * 1000000) + 1)))
+    .pipe(gulp.dest('../'));
+}
+
 function watcher() {
   livereload.listen();
   gulp.watch('../scss/**/*.scss', styles);
@@ -59,5 +66,5 @@ exports.default = gulp.series(
 );
 
 exports.build = gulp.series(
-  gulp.parallel(styles, buildScripts)
+  gulp.parallel(styles, buildScripts, buildVersion)
 );
