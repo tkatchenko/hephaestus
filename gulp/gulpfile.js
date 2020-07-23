@@ -6,9 +6,19 @@ const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 const babel = require('gulp-babel');
 const webpack = require('webpack-stream');
-const livereload = require('gulp-livereload');
+const connect = require('gulp-connect');
 const replace = require('gulp-replace');
- 
+
+function server(done) {
+  connect.server({
+    root: '../',
+    livereload: true,
+    port: 8080,
+  });
+
+  done();
+}
+
 function styles() {
   return gulp.src('../scss/index.scss')
     .pipe(sass().on('error', (error) => console.log(error)))
@@ -18,7 +28,7 @@ function styles() {
     ]))
     .pipe(concat('styles.css'))
     .pipe(gulp.dest('../build'))
-    .pipe(livereload().on('error', (error) => console.log(error)));
+    .pipe(connect.reload());
 }
 
 function scripts() {
@@ -30,7 +40,7 @@ function scripts() {
       }
     }))
     .pipe(gulp.dest('../build'))
-    .pipe(livereload().on('error', (error) => console.log(error)));
+    .pipe(connect.reload());
 }
 
 function buildScripts() {
@@ -45,7 +55,7 @@ function buildScripts() {
       presets: ['@babel/preset-env']
     }))
     .pipe(gulp.dest('../build'))
-    .pipe(livereload().on('error', (error) => console.log(error)));
+    .pipe(connect.reload());
 }
 
 function buildVersion() {
@@ -55,13 +65,12 @@ function buildVersion() {
 }
 
 function watcher() {
-  livereload.listen();
   gulp.watch('../scss/**/*.scss', styles);
   gulp.watch('../js/**/*.js', scripts);
 }
 
 exports.default = gulp.series(
-  gulp.parallel(styles, scripts),
+  gulp.parallel(server, styles, scripts),
   watcher
 );
 
