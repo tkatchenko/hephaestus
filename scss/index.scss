@@ -34,8 +34,8 @@ input, select, textarea {
 
 /* Placeholder */
 ::placeholder {
-  color: white;
-  background-color: black;
+  color: var(--black);
+  background-color: var(--white);
 }
 
 /* Common */
